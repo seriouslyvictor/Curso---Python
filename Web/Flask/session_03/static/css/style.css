@@ -1,0 +1,359 @@
+/* ================================================================
+   style.css — FOLHA DE ESTILOS PRINCIPAL
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ================================================================
+
+   COMO ESTE ARQUIVO E LINKADO:
+   Em base.html, usamos:
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+   url_for('static', filename='css/style.css') gera o caminho correto.
+   NAO use caminhos fixos como "/static/css/style.css" —
+   url_for trata mudancas de caminho automaticamente e e a forma Flask-padrao.
+
+   DICA PARA O ALUNO:
+   Se suas alteracoes de CSS nao aparecem, tente Ctrl+Shift+R (hard refresh).
+   Browsers fazem cache agressivo de CSS. Isso vai salvar horas!
+   ================================================================ */
+
+
+/* ---- RESET E BASE ---- */
+/* Remove estilos padrao do browser para consistencia entre Chrome/Firefox/Safari */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0f0f23;
+  color: #cccccc;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;  /* Permite empurrar o rodape para o final */
+}
+
+a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+
+/* ---- BARRA DE NAVEGACAO ---- */
+/* Fica em base.html — estilos aqui afetam TODAS as paginas automaticamente */
+.navbar {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 0.8rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;  /* Fica visivel ao rolar a pagina */
+  top: 0;
+  z-index: 100;      /* Fica acima de outros elementos */
+}
+
+.nav-brand a {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f0f6fc;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #8b949e;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.nav-links a:hover {
+  color: #f0f6fc;
+  text-decoration: none;
+}
+
+/*
+   A classe 'active' e adicionada pelo Jinja2 em base.html:
+     class="{% if current_page == 'home' %}active{% endif %}"
+   Este e o STRETCH GOAL da sessao — nav que destaca a pagina atual!
+*/
+.nav-links a.active {
+  color: #58a6ff;
+  background-color: #1c2128;
+}
+
+
+/* ---- CONTEUDO PRINCIPAL ---- */
+.main-content {
+  flex: 1;           /* Empurra o rodape para o final da pagina */
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+  width: 100%;
+}
+
+
+/* ---- RODAPE ---- */
+/* Fica em base.html — aparece em todas as paginas */
+.footer {
+  background-color: #161b22;
+  border-top: 1px solid #30363d;
+  text-align: center;
+  padding: 1rem;
+  color: #6e7681;
+  font-size: 0.85rem;
+}
+
+
+/* ---- CABECALHO DE PAGINA (reutilizado em varias paginas) ---- */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #30363d;
+}
+
+.page-header h1 {
+  color: #f0f6fc;
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.page-header p {
+  color: #8b949e;
+}
+
+
+/* ---- HOME: HERO ---- */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  color: #f0f6fc;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  color: #8b949e;
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+.btn-primary {
+  background-color: #238636;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2ea043;
+  text-decoration: none;
+}
+
+
+/* ---- HOME: CARDS DE RECURSOS ---- */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.feature-card h3 {
+  color: #f0f6fc;
+  margin-bottom: 0.5rem;
+}
+
+
+/* ---- SOBRE ---- */
+.about-content {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.about-text h2 {
+  color: #f0f6fc;
+  margin: 1.4rem 0 0.6rem;
+}
+
+.about-text h2:first-child {
+  margin-top: 0;
+}
+
+.skills-list {
+  list-style: none;
+  margin-top: 0.5rem;
+}
+
+.skills-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #21262d;
+}
+
+.skills-list li:last-child {
+  border-bottom: none;
+}
+
+
+/* ---- PROJETOS ---- */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+.project-card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 1.5rem;
+  position: relative;  /* Necessario para posicionar o badge dentro do card */
+}
+
+/* Cards favoritos ganham borda azul destaque */
+.project-card.featured {
+  border-color: #388bfd;
+}
+
+.project-card h2 {
+  color: #f0f6fc;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  /* Espaco para o badge nao sobrepor o titulo */
+  padding-right: 90px;
+}
+
+.project-card p {
+  color: #8b949e;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Badge posicionado no canto superior direito do card */
+.badge {
+  background-color: #1f3a5c;
+  color: #58a6ff;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tool-tag {
+  background-color: #21262d;
+  color: #8b949e;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #30363d;
+}
+
+
+/* ---- CONTATO ---- */
+.contact-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+}
+
+.contact-item strong {
+  color: #f0f6fc;
+  display: block;
+}
+
+/* Caixa de aviso amarela (usada para "Em breve: formulario POST") */
+.note-box {
+  background-color: #1c2128;
+  border: 1px solid #e3b341;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #e3b341;
+}
+
+
+/* ---- CREDITOS ---- */
+.credits-list {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.credits-list p strong {
+  color: #f0f6fc;
+}
+
+
+/* ---- ESTADO VAZIO ---- */
+.empty-state {
+  text-align: center;
+  color: #6e7681;
+  padding: 3rem;
+}

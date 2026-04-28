@@ -1,0 +1,51 @@
+{# ==========================================================================
+   about.html — SOBRE MIM
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   ALUNO: Repare que este arquivo e muito pequeno!
+   O <head>, nav e rodape ja vem do base.html.
+   Voce so escreve o que e UNICO nesta pagina.
+
+   PROFESSOR: Abra home.html e about.html lado a lado.
+   Mostre como ambos sao pequenos porque compartilham o base.
+   Contraste com como seria se nao houvesse heranca (tudo duplicado).
+#}
+{% extends 'base.html' %}
+
+{% block title %}Sobre{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+  <h1>Sobre Mim</h1>
+  <p>Estudante no SENAI, aprendendo Python e desenvolvimento web.</p>
+</section>
+
+<section class="about-content">
+  <div class="about-text">
+    <h2>Minha jornada</h2>
+    <p>
+      Comecei aprendendo Python basico — variaveis, funcoes, loops, listas.
+      Agora estou no modulo de web, construindo aplicacoes reais com Flask.
+    </p>
+    <p>
+      O que mais me surpreendeu: um servidor web e basicamente
+      uma funcao Python que recebe um pedido e devolve uma resposta.
+    </p>
+
+    <h2>O que ja aprendi</h2>
+    <ul class="skills-list">
+      <li>&#x2705; Python basico (variaveis, funcoes, OOP)</li>
+      <li>&#x2705; HTML &amp; CSS (crash course)</li>
+      <li>&#x2705; Flask: rotas e servidor de desenvolvimento</li>
+      <li>&#x2705; Jinja2: templates, variaveis, loops, condicionais</li>
+      <li>&#x2705; Heranca de template com base.html</li>
+      <li>&#x2705; Arquivos estaticos: CSS e imagens via url_for</li>
+      <li>&#x1F532; Banco de dados com SQLAlchemy (Sessao 6)</li>
+      <li>&#x1F532; Deploy na internet (Sessao 12)</li>
+    </ul>
+  </div>
+</section>
+
+{% endblock %}

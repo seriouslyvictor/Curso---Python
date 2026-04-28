@@ -1,0 +1,52 @@
+{# ==========================================================================
+   home.html — PAGINA INICIAL
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   LINHA CRITICA: {% extends 'base.html' %}
+   Esta linha diz ao Jinja2:
+     "Antes de renderizar este arquivo, carregue base.html.
+      Depois, preencha os blocks que eu definir abaixo."
+
+   REGRA IMPORTANTE:
+   Apenas o conteudo DENTRO de {% block %} ... {% endblock %} e usado.
+   Qualquer coisa escrita FORA de um block em um template filho e IGNORADA.
+#}
+{% extends 'base.html' %}
+
+{# Define o titulo desta pagina na aba do browser #}
+{% block title %}Home{% endblock %}
+
+{# Preenche o buraco 'content' do base.html com o conteudo desta pagina #}
+{% block content %}
+
+<section class="hero">
+  <h1>Ola! Eu sou um estudante de Python &#x1F44B;</h1>
+  <p class="hero-subtitle">
+    Estou aprendendo Flask no SENAI e ja consigo criar sites de verdade.
+    Confira meus projetos!
+  </p>
+  <a href="{{ url_for('projects_page') }}" class="btn-primary">
+    Ver meus projetos &rarr;
+  </a>
+</section>
+
+<section class="features">
+  <div class="feature-card">
+    <span class="feature-icon">&#x1F6E3;&#xFE0F;</span>
+    <h3>Rotas Flask</h3>
+    <p>Aprendi a criar rotas com @app.route e retornar paginas HTML reais.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">&#x1F3A8;</span>
+    <h3>Templates Jinja2</h3>
+    <p>Uso &#123;&#123; &#125;&#125; e &#123;% %&#125; para separar Python de HTML.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">&#x1F3D7;&#xFE0F;</span>
+    <h3>Heranca de Template</h3>
+    <p>Este site usa base.html — edito o nav uma vez e todas as paginas atualizam!</p>
+  </div>
+</section>
+
+{% endblock %}

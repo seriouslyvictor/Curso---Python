@@ -1,0 +1,63 @@
+{# ==========================================================================
+   contact.html — CONTATO
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   NOTA INTENCIONAL: Nao ha formulario aqui.
+   Formularios com POST virao na Sessao 5.
+   Esta pagina EXIBE informacoes de contato — sem capturar dados ainda.
+
+   "Seed" para a proxima sessao (conforme o plano do curso):
+     "Next session, your users will be able to TYPE stuff back to you."
+#}
+{% extends 'base.html' %}
+
+{% block title %}Contato{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+  <h1>Contato</h1>
+  <p>Quer falar comigo? Me encontre aqui:</p>
+</section>
+
+<section class="contact-content">
+  <div class="contact-info">
+
+    <div class="contact-item">
+      <span class="contact-icon">&#x1F4E7;</span>
+      <div>
+        <strong>Email</strong>
+        <p>estudante@senai.br</p>
+      </div>
+    </div>
+
+    <div class="contact-item">
+      <span class="contact-icon">&#x1F419;</span>
+      <div>
+        <strong>GitHub</strong>
+        <p>github.com/estudante</p>
+      </div>
+    </div>
+
+    <div class="contact-item">
+      <span class="contact-icon">&#x1F4CD;</span>
+      <div>
+        <strong>Localizacao</strong>
+        <p>Sao Paulo, SP</p>
+      </div>
+    </div>
+
+  </div>
+
+  {# Aviso amigavel sobre o formulario que vira na Sessao 5 #}
+  <div class="note-box">
+    <p>
+      <strong>&#x1F4DD; Em breve:</strong>
+      Formulario de contato com validacao! (Sessao 5 &mdash; Formularios POST)
+    </p>
+  </div>
+
+</section>
+
+{% endblock %}

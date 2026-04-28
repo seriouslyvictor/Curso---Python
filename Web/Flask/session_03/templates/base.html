@@ -1,0 +1,134 @@
+{# ==========================================================================
+   base.html — O TEMPLATE PAI (ESQUELETO)
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   O QUE E ESTE ARQUIVO?
+   Este e o "esqueleto" compartilhado por todas as paginas do site.
+   Em vez de copiar o <head>, nav e rodape em CADA arquivo HTML,
+   escrevemos UMA VEZ aqui e deixamos todas as outras paginas "herdar".
+
+   COMO FUNCIONA A HERANCA?
+   1. Este arquivo (base.html) define secoes {% block %} — "buracos" que
+      templates filhos podem preencher com seu proprio conteudo.
+   2. Um template filho declara {% extends 'base.html' %} no topo.
+   3. O filho entao preenche os buracos com {% block %} ... {% endblock %}.
+   4. Tudo fora dos blocks (nav, rodape, <head>) vem DAQUI automaticamente.
+
+   MOMENTO MAGICO DA AULA:
+   Edite o <nav> aqui, recarregue home E about.
+   As duas paginas atualizam instantaneamente. ISSO e o motivo da heranca.
+#}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  {# -------------------------------------------------------------------
+     BLOCK: title
+     Cada pagina define seu proprio titulo na aba do browser.
+     Se o filho nao preencher este block, "Meu Portfolio" e usado.
+
+     ALUNO: E por isso que cada aba mostra o titulo correto da pagina!
+  ------------------------------------------------------------------- #}
+  <title>{% block title %}Meu Portfolio{% endblock %} | Flask</title>
+
+  {# -------------------------------------------------------------------
+     ARQUIVOS ESTATICOS — Linkando nosso CSS
+
+     url_for('static', filename='css/style.css') gera a URL correta
+     para o arquivo CSS. Nao use caminhos fixos como "/static/css/style.css"
+     — url_for e a forma segura e portatil do Flask referenciar estaticos.
+
+     DICA PARA O PROFESSOR:
+     url_for aparece de novo para links de rotas (/sobre, etc.) e imagens.
+     Introduza como "a forma Flask de escrever caminhos corretamente"
+     e deixe a familiaridade crescer ao longo das sessoes.
+  #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  {# -------------------------------------------------------------------
+     BLOCK: extra_css  (STRETCH GOAL da sessao)
+     Paginas filhas podem adicionar CSS proprio sem mexer no stylesheet global.
+     A maioria das paginas deixa este block vazio — ele simplesmente some.
+  ------------------------------------------------------------------- #}
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  {# -------------------------------------------------------------------
+     BARRA DE NAVEGACAO
+     Fica no base.html para aparecer em TODAS as paginas automaticamente.
+
+     A variavel 'current_page' e passada de cada rota Python.
+     Usamos para adicionar a classe CSS 'active' ao link da pagina atual —
+     para o usuario sempre saber onde esta no site.
+
+     STRETCH GOAL: Este padrao de "nav ativo" foi listado como stretch goal.
+     Mostre como passar current_page de cada rota torna isso possivel.
+  ------------------------------------------------------------------- #}
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="{{ url_for('home') }}">&#x1F40D; Dev Portfolio</a>
+    </div>
+    <ul class="nav-links">
+      <li>
+        <a href="{{ url_for('home') }}"
+           class="{% if current_page == 'home' %}active{% endif %}">
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('about') }}"
+           class="{% if current_page == 'about' %}active{% endif %}">
+          Sobre
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('projects_page') }}"
+           class="{% if current_page == 'projects' %}active{% endif %}">
+          Projetos
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('contact') }}"
+           class="{% if current_page == 'contact' %}active{% endif %}">
+          Contato
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  {# -------------------------------------------------------------------
+     AREA DE CONTEUDO PRINCIPAL
+
+     Este e o block mais importante — o "buraco" onde o conteudo
+     unico de cada pagina sera inserido.
+
+     ALUNO: Tudo que voce colocar entre {% block content %} e {% endblock %}
+     no seu template filho vai aparecer EXATAMENTE AQUI.
+  ------------------------------------------------------------------- #}
+  <main class="main-content">
+    {% block content %}
+      {#
+         Se um template filho esquecer de preencher este block,
+         esta mensagem padrao aparece — util para debugar.
+      #}
+      <p>Pagina sem conteudo definido.</p>
+    {% endblock %}
+  </main>
+
+  {# -------------------------------------------------------------------
+     RODAPE
+     Como o nav, fica aqui para toda pagina ganhar de graca.
+  ------------------------------------------------------------------- #}
+  <footer class="footer">
+    <p>Feito com &#x1F40D; Python + Flask &nbsp;|&nbsp; Curso SENAI de Desenvolvimento Web</p>
+  </footer>
+
+</body>
+</html>

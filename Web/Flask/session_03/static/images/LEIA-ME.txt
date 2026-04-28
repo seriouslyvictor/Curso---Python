@@ -1,0 +1,25 @@
+PASTA DE IMAGENS — static/images/
+==================================
+
+Coloque suas imagens aqui: .jpg, .png, .gif, .svg, .webp
+
+COMO REFERENCIAR UMA IMAGEM NO HTML:
+
+  <img src="{{ url_for('static', filename='images/minha-foto.jpg') }}" alt="descricao" />
+
+EXEMPLO PRATICO (em qualquer template filho):
+
+  <!-- Logo no header -->
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" />
+
+  <!-- Banner na pagina About -->
+  <img src="{{ url_for('static', filename='images/banner.jpg') }}" alt="Banner" />
+
+POR QUE url_for E NAO UM CAMINHO FIXO?
+  url_for('static', filename='images/foto.jpg') e preferivel a /static/images/foto.jpg
+  porque o Flask cuida do caminho correto independente de onde o app estiver rodando.
+
+DICAS:
+  - Use nomes em minusculas sem espacos: minha-foto.jpg (nao "Minha Foto.jpg")
+  - Otimize imagens antes de usar — imagens grandes deixam o site lento
+  - Para projeto portfolio: uma foto de perfil (200x200px) funciona bem

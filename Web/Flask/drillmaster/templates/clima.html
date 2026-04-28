@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+
     <div class="page">
         <a class="back-link" href="/">Voltar para todos os exercicios</a>
         <h1>3b - Pagina de Clima</h1>
@@ -24,5 +19,4 @@
             {% endif %}
         </div>
     </div>
-</body>
-</html>
+{% endblock content %}

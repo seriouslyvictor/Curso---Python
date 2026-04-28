@@ -6,6 +6,15 @@
     <title>Esse é meu site massa!</title>
 </head>
 <body>
+    <header>
+        <nav></nav>
+            <ul>
+                <li><a href="{{ url_for('clima') }}">Clima</a></li>
+                <li><a href="{{ url_for('pix') }}">Sobre</a></li>
+                <li><a href="{{ url_for('turma') }}">turma</a></li>
+            </ul>
+        </nav>
+    </header>
     {% block content %}
 
     {% endblock content %}

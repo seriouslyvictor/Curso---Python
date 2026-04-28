@@ -1,0 +1,68 @@
+{# ==========================================================================
+   projects.html — PAGINA DE PROJETOS
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   CONCEITO REVISADO DA SESSAO 2: {% for %} e {% if %}
+   Aqui revisamos loops e condicionais do Jinja2 (Sessao 2),
+   mas agora dentro de um template que herda base.html.
+
+   DADOS RECEBIDOS DO PYTHON:
+   A rota em app.py passa:
+     render_template("projects.html", projects=projects, current_page="projects")
+
+   Entao 'projects' e a lista de dicionarios definida em app.py.
+   Cada 'project' no loop e um dicionario como:
+     {"id": 1, "name": "Mini Wikipedia", "is_favorite": True, ...}
+#}
+{% extends 'base.html' %}
+
+{% block title %}Projetos{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+  <h1>Meus Projetos</h1>
+  {# O filtro |length retorna o tamanho de uma lista — igual a len() no Python #}
+  <p>{{ projects | length }} projeto(s) construido(s) durante o curso.</p>
+</section>
+
+{# =======================================================================
+   LOOP PRINCIPAL — percorre a lista de projetos
+
+   'projects' e a lista passada de app.py via render_template().
+   Cada 'project' e um dicionario com chaves: id, name, description,
+   tools (lista), is_favorite (booleano).
+
+   PROFESSOR: Este bloco revisa Sessao 2 ({% for %} + {% if %}) mas
+   agora o resultado aparece dentro do layout do base.html automaticamente.
+======================================================================= #}
+<section class="projects-grid">
+  {% for project in projects %}
+  <div class="project-card {% if project.is_favorite %}featured{% endif %}">
+
+    {# Mostra badge de favorito se is_favorite for True #}
+    {% if project.is_favorite %}
+      <span class="badge">&#x2B50; Favorito</span>
+    {% endif %}
+
+    <h2>{{ project.name }}</h2>
+    <p>{{ project.description }}</p>
+
+    {# Loop aninhado: percorre a lista de ferramentas de cada projeto #}
+    <div class="tools-list">
+      {% for tool in project.tools %}
+        <span class="tool-tag">{{ tool }}</span>
+      {% endfor %}
+    </div>
+
+  </div>
+  {% endfor %}
+</section>
+
+{# Exibe mensagem se a lista de projetos estiver vazia #}
+{% if not projects %}
+  <p class="empty-state">Nenhum projeto cadastrado ainda. Em breve!</p>
+{% endif %}
+
+{% endblock %}

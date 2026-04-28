@@ -1,0 +1,37 @@
+{# ==========================================================================
+   credits.html — MINI-DESAFIO (resultado)
+   Sessao 3: Heranca de Template + Arquivos Estaticos
+   ==========================================================================
+
+   CONTEXTO DO DESAFIO DE 3 MINUTOS:
+     "Adicione uma rota /creditos que renderiza um template que extende
+      base.html e so tem um titulo dentro do block de conteudo."
+
+   ALUNO: Olhe como este arquivo e pequeno!
+   O nav, rodape, CSS, <head> — tudo vem de base.html de graca.
+   Voce so escreve o que e UNICO nesta pagina. E so isso.
+
+   PROFESSOR: Este e o exemplo mais simples de heranca — quase vazio.
+   Perfeito para mostrar o valor da heranca com minimo de ruido.
+   Se o aluno adicionar apenas o {% extends %} e um <h1> e isso e suficiente.
+#}
+{% extends 'base.html' %}
+
+{% block title %}Creditos{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+  <h1>Creditos</h1>
+  <p>Este site foi construido durante o Curso de Python Web do SENAI.</p>
+</section>
+
+<div class="credits-list">
+  <p>&#x1F40D; <strong>Linguagem:</strong> Python 3</p>
+  <p>&#x1F336;&#xFE0F; <strong>Framework:</strong> Flask</p>
+  <p>&#x1F3A8; <strong>Templates:</strong> Jinja2</p>
+  <p>&#x1F4DA; <strong>Curso:</strong> SENAI &mdash; Desenvolvimento Web com Python</p>
+  <p>&#x1F468;&#x200D;&#x1F3EB; <strong>Professor(a):</strong> [Seu nome aqui]</p>
+</div>
+
+{% endblock %}
