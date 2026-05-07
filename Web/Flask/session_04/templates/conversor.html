@@ -1,0 +1,203 @@
+{# ======================================================================
+   conversor.html - Template principal da Sessao 4
+   ======================================================================
+
+   FOCO DA AULA:
+   Este template mostra um formulario GET. Quando o usuario envia,
+   o navegador monta uma URL com os dados:
+
+     /?valor=25&tipo=celsius_para_fahrenheit
+
+   O Flask le esses dados no app.py com:
+
+     request.args.get("valor")
+     request.args.get("tipo")
+
+   REGRA DE OURO:
+   O atributo name="" no HTML precisa bater com a chave usada no Python.
+
+     <input name="valor">  -> request.args.get("valor")
+     <select name="tipo">  -> request.args.get("tipo")
+
+   Se esses nomes forem diferentes, Flask nao encontra o dado.
+#}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conversor Universal | Flask Sessao 4</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <p class="etiqueta-aula">Sessao 04 - Forms & User Input (GET)</p>
+      <h1>Conversor Universal</h1>
+      <p>
+        O formulario envia dados pela URL. O Python le a URL com
+        <code>request.args</code> e calcula o resultado.
+      </p>
+    </div>
+  </header>
+
+  <main class="conteudo-principal">
+    <section class="painel">
+      <h2>Converter valor</h2>
+
+      {# ---------------------------------------------------------------
+         FORMULARIO GET
+         ---------------------------------------------------------------
+         method="GET" significa:
+           - os dados aparecem na URL
+           - da para copiar/colar a URL com a conversao
+           - e ideal para busca, filtros e consultas simples
+
+         action="/" significa:
+           - quando clicar no botao, envie os dados para a rota /
+
+         Nesta aula usamos GET porque a visibilidade da URL ajuda a
+         entender o caminho do dado.
+      ---------------------------------------------------------------- #}
+      <form class="formulario-conversor" action="/" method="GET">
+        <div class="campo">
+          <label for="valor">Valor numerico</label>
+
+          {# value="{{ valor_digitado }}" mantem o que o usuario digitou
+             depois do envio. Sem isso, o campo ficaria vazio a cada submit. #}
+          <input
+            id="valor"
+            name="valor"
+            type="text"
+            placeholder="Exemplo: 25"
+            value="{{ valor_digitado }}"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="tipo">Tipo de conversao</label>
+
+          {# ===============================================================
+             EXEMPLO DIDATICO - NAO USADO NA TELA
+             ===============================================================
+             Abaixo esta a versao "manual" de um <select>, com duas opcoes
+             escritas uma por uma. E assim que um HTML normal funcionaria.
+
+             Este bloco fica comentado porque a versao real da aula usa Jinja
+             para gerar as opcoes automaticamente a partir da lista Python.
+
+             <select id="tipo" name="tipo">
+               <option value="celsius_para_fahrenheit">Celsius -> Fahrenheit</option>
+               <option value="fahrenheit_para_celsius">Fahrenheit -> Celsius</option>
+             </select>
+
+             Agora compare com a versao real abaixo:
+               - o Python entrega a lista tipos_de_conversao
+               - o Jinja percorre essa lista com {% for %}
+               - cada item vira um <option>
+               - o if adiciona selected quando a opcao atual e a escolhida
+
+             Em outras palavras: o HTML continua sendo um <select> normal.
+             O Jinja so escreve esse HTML por voce.
+          #}
+
+          {# O name="tipo" cria a chave tipo na URL.
+             Cada <option value="..."> envia uma string diferente ao Python. #}
+          <select id="tipo" name="tipo">
+            {% for conversao in tipos_de_conversao %}
+              <option
+                value="{{ conversao.valor }}"
+                {% if conversao.valor == tipo_escolhido %}selected{% endif %}
+              >
+                {{ conversao.rotulo }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit">Converter</button>
+      </form>
+    </section>
+
+    <section class="painel">
+      <h2>Resultado</h2>
+
+      {# ---------------------------------------------------------------
+         ESTADO VAZIO
+         ---------------------------------------------------------------
+         Antes do primeiro envio, nao existe valor na URL.
+         Por isso o app.py passa formulario_foi_enviado=False.
+
+         Esse padrao evita tentar mostrar resultado antes de existir dado.
+      ---------------------------------------------------------------- #}
+      {% if not formulario_foi_enviado %}
+        <div class="estado-vazio">
+          <p>Digite um valor acima e clique em Converter.</p>
+          <p class="texto-secundario">
+            Depois do envio, observe a URL do navegador.
+            Ela vai ganhar algo como <code>?valor=25&amp;tipo=...</code>.
+          </p>
+        </div>
+
+      {% elif mensagem_de_erro %}
+        <div class="mensagem-erro">
+          <strong>Entrada invalida:</strong>
+          <p>{{ mensagem_de_erro }}</p>
+        </div>
+
+      {% else %}
+        <div class="resultado">
+          <p class="resultado-principal">{{ resultado_formatado }}</p>
+
+          {% if formula_usada %}
+            <p class="formula">{{ formula_usada }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="painel painel-conceito">
+      <h2>O que chegou no Flask?</h2>
+      <p>
+        Compare os nomes abaixo com o HTML do formulario e com a URL do navegador.
+        O Flask so consegue ler uma informacao quando o <code>name</code> do campo
+        combina com a chave usada em <code>request.args.get()</code>.
+      </p>
+
+      <dl class="lista-conceitos">
+        <div>
+          <dt>Campo HTML</dt>
+          <dd><code>name="valor"</code></dd>
+        </div>
+        <div>
+          <dt>Leitura no Flask</dt>
+          <dd><code>request.args.get("valor")</code></dd>
+        </div>
+        <div>
+          <dt>Valor recebido agora</dt>
+          <dd><code>{{ valor_digitado if valor_digitado else "nenhum ainda" }}</code></dd>
+        </div>
+      </dl>
+
+      <dl class="lista-conceitos">
+        <div>
+          <dt>Campo HTML</dt>
+          <dd><code>name="tipo"</code></dd>
+        </div>
+        <div>
+          <dt>Leitura no Flask</dt>
+          <dd><code>request.args.get("tipo")</code></dd>
+        </div>
+        <div>
+          <dt>Tipo recebido agora</dt>
+          <dd><code>{{ tipo_escolhido }}</code></dd>
+        </div>
+      </dl>
+    </section>
+  </main>
+</body>
+
+</html>
