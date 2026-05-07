@@ -1,0 +1,228 @@
+/* ================================================================
+   style.css - Sessao 4
+   Forms & User Input (GET)
+   ================================================================
+
+   Este CSS nao e o conceito principal da aula.
+   Ele existe para deixar o formulario legivel e agradavel sem
+   esconder a parte importante: HTML envia dados, Flask le request.args.
+
+   DICA PARA O ALUNO:
+   Se alterar este arquivo e nada mudar no navegador, use Ctrl+Shift+R.
+   O navegador pode estar usando uma versao antiga do CSS em cache.
+   ================================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f3f7f0;
+  color: #1d2b24;
+  line-height: 1.6;
+}
+
+code {
+  background: #e4ece2;
+  border: 1px solid #c7d7c3;
+  border-radius: 4px;
+  color: #214d38;
+  font-family: Consolas, "Courier New", monospace;
+  padding: 0.1rem 0.3rem;
+}
+
+.cabecalho {
+  background: #17412f;
+  color: #ffffff;
+  padding: 2.5rem 1.5rem;
+}
+
+.cabecalho-conteudo {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.etiqueta-aula {
+  color: #bfe7c7;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.cabecalho h1 {
+  font-size: 2.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.cabecalho p {
+  max-width: 720px;
+}
+
+.cabecalho code {
+  background: #0f2f21;
+  border-color: #2d6a4f;
+  color: #d8ffe0;
+}
+
+.conteudo-principal {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.painel {
+  background: #ffffff;
+  border: 1px solid #d6e1d3;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 18px rgba(23, 65, 47, 0.08);
+}
+
+.painel h2 {
+  color: #17412f;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.formulario-conversor {
+  display: grid;
+  gap: 1rem;
+}
+
+.campo {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.campo label {
+  font-weight: 700;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  border: 1px solid #b8cbb4;
+  border-radius: 6px;
+  color: #1d2b24;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #2d6a4f;
+  outline: 3px solid #c9efd1;
+}
+
+button {
+  width: fit-content;
+  border: 0;
+  border-radius: 6px;
+  background: #2d6a4f;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 1.2rem;
+}
+
+button:hover {
+  background: #24563f;
+}
+
+.estado-vazio,
+.resultado,
+.mensagem-erro {
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.estado-vazio {
+  background: #eef5eb;
+  border: 1px dashed #9bb795;
+}
+
+.texto-secundario {
+  color: #58685c;
+  margin-top: 0.35rem;
+}
+
+.resultado {
+  background: #e7f8ea;
+  border: 1px solid #9bd6a8;
+}
+
+.resultado-principal {
+  color: #17412f;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.formula {
+  color: #3d5e4d;
+  margin-top: 0.4rem;
+}
+
+.mensagem-erro {
+  background: #fff2f0;
+  border: 1px solid #f0a19a;
+  color: #842029;
+}
+
+.painel-conceito p {
+  margin-bottom: 1rem;
+}
+
+.lista-conceitos {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.lista-conceitos div {
+  display: grid;
+  gap: 0.2rem;
+  grid-template-columns: minmax(160px, 220px) 1fr;
+  align-items: start;
+  border-top: 1px solid #e4ece2;
+  padding-top: 0.7rem;
+}
+
+.lista-conceitos dt {
+  color: #3d5e4d;
+  font-weight: 700;
+}
+
+.lista-conceitos dd {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .cabecalho {
+    padding: 2rem 1rem;
+  }
+
+  .cabecalho h1 {
+    font-size: 1.8rem;
+  }
+
+  .conteudo-principal {
+    padding: 1rem;
+  }
+
+  .lista-conceitos div {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 100%;
+  }
+}

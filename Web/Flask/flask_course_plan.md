@@ -328,8 +328,8 @@ personal.
   **0:55 --  **Guided Practice** Dynamic Profile Card with teacher
   1:25**                         guidance
 
-  **1:25 --  **Free Practice**   Jinja drill progression: variables →
-  2:45**                         lists → conditionals → dicts
+  **1:25 --  **Free Practice**   Top 5 Fan Page project + stretch goals
+  2:45**                         
 
   **2:45 --  **Wrap-up**         Show-and-tell, seed next session
   3:00**                         
@@ -461,170 +461,50 @@ circulates.
 
   -----------------------------------------------------------------------
 
-🚀 **Block 3 --- Free Practice: Jinja Drill Progression**
+🚀 **Block 3 --- Free Practice**
 
 *\[80 minutes\]*
 
-**Why this block looks different**
+**Core Challenge: \"Top 5\" Fan Page**
 
-From running previous cohorts, we know loops and templating with dicts
-are where students most often get stuck. This session's free practice is
-a structured drill with progressive difficulty instead of one
-open-ended project. Students work through a ladder of small,
-self-contained exercises --- each one isolates a single Jinja concept
-before combining them. All exercises live in the same Flask app, so by
-the end students have one project with many routes.
+Build a Flask app about something the student loves --- a band, game,
+show, sport, anything. Personal investment keeps motivation high while
+they get repetition with templates and logic blocks.
 
-**How to run it**
+**Requirements:**
 
--   Hand out a printed list of the exercises (or share a link) so
-    students can work at their own pace
+-   A home route that renders home.html with a title and a list of 5
+    items passed from Python
 
--   For every exercise, the Python route signature and the data are
-    **given** --- students only write the template side. This isolates
-    Jinja practice and removes the \"what data should I invent\"
-    friction
+-   The template loops through the items and displays each one
 
--   Expect most students to reach the end of Level 3. Level 4 is the
-    stretch zone
+-   A detail route /item/\<item_id\> that renders a separate template
+    showing info about one item
 
--   Circulate heavily during Level 3 (nested if inside for) and Level 4
-    (dicts) --- these are the genuine difficulty jumps
+-   At least one {% if %} block somewhere that changes what is displayed
+    based on data
 
-  -----------------------------------------------------------------------
-  **Tip:** Do not let students skip levels. The whole point is the
-  ladder. If someone feels a level is too easy, they finish it in 3
-  minutes and move on --- that is fine. But no jumping from Level 1 to
-  Level 4.
+-   Items stored as a list of dicts in Python (name, description,
+    rating, etc.)
 
-  -----------------------------------------------------------------------
+**Stretch Goals (fast finishers):**
 
-**Level 1 --- Simple Variables** *(the \"print this here\" stage)*
+-   Add a rating to each item and use {% if %} + {% for %} to display N
+    star emojis based on the rating
 
-Only goal: get comfortable with {{ }} and passing variables to
-render_template. No loops, no conditionals yet.
+-   Add an is_favorite flag --- mark that item with special styling or a
+    badge
 
--   **1a --- Instagram-style Profile Card.** Route /perfil passes name,
-    bio, followers, following, and posts (all hardcoded in Python).
-    Template renders a social profile card.
+-   Try {% else %} and {% elif %} for more nuanced conditionals
 
--   **1b --- Product Card (iPhone).** Route /produto passes product
-    name, price, description, an image path (from /static/images/), and
-    one more field of the student\'s choice. Template renders a product
-    page. Key teaching point: **images are just variables too** ---
-    pass the path as a string, use it in {{ image }}.
-
--   **1c --- Order Receipt.** Route /pedido passes item_name, quantity,
-    and unit_price. Python **pre-computes** total = quantity \*
-    unit_price and passes it too. Template displays a receipt-style
-    page: \"3 × Coxinha @ R\$ 8,00 = R\$ 24,00\". Teaching point:
-    **Python does the math, the template just displays** --- no logic
-    in the HTML.
+-   Pass the current date using datetime and display it somewhere in the
+    template
 
   -----------------------------------------------------------------------
-  **Checkpoint:** Walk the room. Confirm everyone can pass a variable
-  and see it on the page. Fix any TemplateNotFound or
-  undefined-variable errors before moving on --- these compound later.
-
-  -----------------------------------------------------------------------
-
-**Level 2 --- Lists and `{% for %}`** *(the \"repeat this\" stage)*
-
-Now they meet {% for %}. Data stays as flat lists of strings --- no
-dicts yet.
-
--   **2a --- Candidatos Aprovados.** Route /aprovados passes a list of
-    6--8 candidate names (plain strings). Template loops through them
-    and renders each as an \<li\> inside a \<ul\>. Simplest possible
-    loop.
-
--   **2b --- Playlist.** Route /playlist passes a list of song names.
-    Template renders a numbered list (\<ol\>). Above the list, show
-    \"{{ songs\|length }} músicas nessa playlist\" using the \|length
-    filter. Introduces the idea that filters exist.
-
--   **2c --- Netflix Series Rating.** Route /serie passes the series
-    name and stars (an int, 1--5). Template uses {% for \_ in
-    range(stars) %}⭐{% endfor %} to print that many star emojis. A
-    different **kind** of loop --- not iterating over data, but
-    repeating N times.
-
-  -----------------------------------------------------------------------
-  **Checkpoint:** The big error here is forgetting {% endfor %}. Let
-  students hit it once and read Jinja\'s error message before
-  intervening. That error-reading skill pays off all course.
-
-  -----------------------------------------------------------------------
-
-**Level 3 --- Conditionals with `{% if %}`** *(the \"decide what to
-show\" stage)*
-
-Now conditionals. Still simple variables and flat lists --- no dicts.
-
--   **3a --- Perfil com Idade.** Route /perfil-idade passes name and
-    age (hardcoded, e.g. age = 16). Template shows the name, and uses
-    {% if %} / {% else %} to show \"Conteúdo para menores\" if age \<
-    18 or \"Conteúdo adulto liberado\" if 18+. Simplest possible if.
-
--   **3b --- Weather Page.** Route /clima passes temperature (int) and
-    city. Template shows the city and uses {% if %} / {% elif %} / {%
-    else %} to pick an emoji and message: freezing (\< 10°), nice
-    (10--25°), hot (\> 25°). Introduces {% elif %} naturally.
-
--   **3c --- Extrato Pix. ⚠️ Boss of Level 3.** Route /pix passes a
-    list of numbers (transaction values, positive and negative mixed).
-    Template loops through them with {% for %}, and **inside** the
-    loop uses {% if %} to classify each one: if value \> 0, show in
-    green as \"Recebido\"; if value \< 0, show in red as \"Enviado\".
-    This is the first **nested** {% if %} inside {% for %} --- exactly
-    the combo that trips students up.
-
-  -----------------------------------------------------------------------
-  **Checkpoint:** 3c is the hardest conceptual jump so far. Ask two
-  students to explain out loud: \"What does the for do? What does the
-  if inside it do?\" Verbalizing cements it. If more than a third of
-  the room is stuck, pause and do it together on the projector.
-
-  -----------------------------------------------------------------------
-
-**Level 4 --- Dictionaries** *(the \"real data\" stage)*
-
-Now data looks like what it will look like in real projects. Most
-students reach here only partially --- that is fine. Level 4 is where
-the session\'s stretch value lives.
-
--   **4a --- Pet Card (one dict).** Route /pet passes a single dict:
-    pet = {\"nome\": \"Rex\", \"especie\": \"Cachorro\", \"idade\": 5,
-    \"vacinado\": True}. Template accesses {{ pet.nome }}, {{
-    pet.especie }}, etc. Only new thing: dot notation on dicts in
-    Jinja.
-
--   **4b --- Sala de Aula (list of dicts).** Route /turma passes a
-    list of student dicts, each with nome, idade, nota. Template loops
-    and renders a table row per student. The \"real\" pattern: {% for
-    aluno in alunos %} then {{ aluno.nome }} inside.
-
--   **4c --- Loja (list of dicts + conditional).** Route /loja passes
-    a list of product dicts, each with nome, preco, em_estoque
-    (boolean). Template loops and shows each product, using {% if
-    produto.em_estoque %} to show a green \"Disponível\" badge or a
-    red \"Esgotado\" badge. The full combo: loop + dict access +
-    conditional. This is the exact pattern they will use for CRUD
-    listing pages in Sessions 7--8.
-
--   **4d --- Nested Data. ⚠️ Boss Level.** Route /times passes a list
-    of team dicts, each with a nome and a membros list. Template has
-    an **outer** loop over teams and an **inner** loop over each
-    team\'s members. Genuinely hard --- frame as optional or
-    pair-programming. Students who nail this are fully ready for
-    Sessions 4--8.
-
-  -----------------------------------------------------------------------
-  **Tip:** If a student finishes 4d early, have them go back and add
-  CSS to make their pages look nice, or flip the exercise: give them
-  a template and have them write the Python route that feeds it the
-  right data. That reverse exercise is an excellent real-
-  understanding check.
+  **Tip:** If a student finishes the core challenge fast and is eyeing
+  the stretch goals, nudge them toward the star-rating one first --- it
+  forces them to nest a loop inside a conditional, which solidifies both
+  concepts at once.
 
   -----------------------------------------------------------------------
 
@@ -632,20 +512,15 @@ the session\'s stretch value lives.
 
 *\[15 minutes\]*
 
--   Ask 2--3 volunteers to show one exercise each in the browser ---
-    pick different levels so the class sees the full progression
+-   2--3 volunteers show their fan pages in the browser
 
--   Quick pulse: show of hands for \"reached Level 3\" and \"reached
-    Level 4\". This tells you where the class landed without singling
-    anyone out
+-   Reinforce the two big ideas: (1) Python file stays clean, HTML file
+    stays clean, (2) {{ }} for output, {% %} for logic
 
--   Reinforce the two big ideas: (1) Python file stays clean, HTML
-    file stays clean, (2) {{ }} for output, {% %} for logic
-
--   Seed next class: \"Every exercise you wrote today has duplicate
-    HTML on top --- the same \<head\>, the same \<body\>. Next class
-    we fix that with inheritance, and we finally style everything
-    with real CSS files.\"
+-   Seed next class: \"Your home and detail pages probably look really
+    similar --- same header, same footer. Copy-pasting that everywhere
+    would be painful with 20 pages. Next class we fix that, and we
+    finally style everything with real CSS files.\"
 
 **Materials & Preparation**
 
@@ -669,16 +544,15 @@ theory. The real learning happens when students are writing {{ variable
 long, cut the logic blocks demo shorter --- they will pick it up in the
 guided practice anyway.
 
-For mixed confidence levels: the guided practice gives strugglers a
-clear shared path, while the drill progression in the free practice
-block handles differentiation automatically --- strugglers consolidate
-Levels 1--2, advanced students push into Level 4. Nobody feels stuck
-or bored.
+For mixed confidence levels: the guided practice is deliberately
+structured so strugglers have a clear path, while the free practice is
+open-ended so advanced students can push themselves with stretch goals.
+This natural differentiation avoids anyone feeling stuck or bored.
 
-Session 3 will introduce base.html and static files. Every drill
-exercise from this session is a perfect refactoring target --- same
-repeated HTML skeleton across all of them, ready to be collapsed into
-one base.html next class.
+Session 3 will introduce base.html and static files, which is why this
+session ends with a deliberately unstyled, repetitive-feeling fan page.
+The pain is the point --- it creates the motivation for template
+inheritance.
 
 +-----------------------------------------------------------------------+
 | **SESSION 3**                                                         |
@@ -705,8 +579,8 @@ one base.html next class.
   **0:45 --  **Break**           
   0:55**                         
 
-  **0:55 --  **Guided Practice** Refactor the Session 2 drill exercises
-  1:25**                         with inheritance + CSS
+  **0:55 --  **Guided Practice** Refactor the Session 2 fan page with
+  1:25**                         inheritance + CSS
 
   **1:25 --  **Free Practice**   Multi-page portfolio site from scratch
   2:45**                         
@@ -723,13 +597,12 @@ one base.html next class.
 
 *\[5 minutes\]*
 
-Pull up a student\'s drill exercises from last session --- open two or
-three of them side by side (say the Perfil, the Playlist, and the
-Extrato Pix templates). Highlight the duplicated parts --- every file
-has its own \<head\>, its own \<body\>, no shared nav or footer. Ask:
-\"If you wanted one menu bar linking all these pages together, how
-many files would you have to edit?\" Now imagine 20 pages. The pain is
-real --- and that is exactly what we are fixing today.
+Pull up a fan page from last session with the home and detail templates
+open side by side. Highlight the duplicated parts --- the same \<head\>,
+the same nav, the same footer. Ask: \"If you wanted to add one link to
+your menu, how many files would you have to edit?\" Now imagine 20
+pages. The pain is real --- and that is exactly what we are fixing
+today.
 
 **Template Inheritance --- The base.html Pattern**
 
@@ -809,39 +682,36 @@ Draw on the board or show on screen:
 
 *\[30 minutes\]*
 
-**Project: Refactor the Drill Exercises**
+**Project: Refactor the Top 5 Fan Page**
 
-Students take three or four of their drill exercises from Session 2
-and unify them under one base.html with shared navigation. The
-refactoring approach is deliberate: they are not building something
-new, they are making something they already built better. This
-reinforces that inheritance is a tool for real-world cleanup, not an
-abstract concept.
+Students take their fan page from Session 2 and refactor it with
+inheritance and static files. The refactoring approach is deliberate:
+they are not building something new, they are making something they
+already built better. This reinforces that inheritance is a tool for
+real-world cleanup, not an abstract concept.
 
 **Requirements:**
 
--   Create base.html with a proper skeleton, a nav bar linking to at
-    least 3 of the drill routes (e.g. Perfil, Playlist, Pix), and a
-    footer
+-   Create base.html with a proper skeleton, nav bar (Home plus at least
+    one other link), and footer
 
 -   Add blocks for title and content
 
--   Refactor at least 3 drill templates to extend base.html
+-   Refactor home.html and the detail template to extend base.html
 
 -   Create static/css/style.css and link it in base.html
 
--   Add at least 5 CSS rules that actually change the page
-    (background, font, spacing, nav styling, anything)
+-   Add at least 5 CSS rules that actually change the page (background,
+    font, spacing, nav styling, anything)
 
--   Add at least one image from static/images/ somewhere (logo,
-    banner, background --- their choice)
+-   Add at least one image from static/images/ somewhere (logo, banner,
+    background --- their choice)
 
   -----------------------------------------------------------------------
-  **Tip:** Students who did not finish many drill exercises last class
-  should get a barebones handout with 3 pre-written templates (Perfil,
-  Playlist, Pix) so they can jump straight into refactoring without
-  having to rebuild from scratch. This keeps the whole class on the
-  same exercise and avoids anyone falling further behind.
+  **Tip:** Students who missed Session 2 should get a barebones fan page
+  handout so they can jump straight into refactoring without having to
+  rebuild from scratch. This keeps the whole class on the same exercise
+  and avoids anyone falling further behind.
 
   -----------------------------------------------------------------------
 
@@ -925,10 +795,9 @@ to family and friends. Motivation matters.
     starting point --- especially helpful for students whose CSS
     confidence is shaky from the crash course
 
--   **Barebones drill templates handout:** 3 minimal working templates
-    from Session 2 (e.g. Perfil, Playlist, Pix) for students who missed
-    the last class or did not finish, so they can jump straight into
-    refactoring without rebuilding from scratch
+-   **Barebones fan page handout:** A minimal working Top 5 fan page for
+    students who missed Session 2 or did not finish, so they can jump
+    straight into refactoring without rebuilding from scratch
 
 -   **Troubleshooting guide:** \"My CSS isn\'t showing up\" → check
     folder name, check url_for quotes, hard refresh with Ctrl+Shift+R
@@ -950,3 +819,543 @@ in Flask\" and let familiarity build across sessions.
 The hard-refresh tip (Ctrl+Shift+R) pays dividends for the rest of the
 course. Teach it deliberately, write it on the board, and bring it up
 again any time a student says \"my changes aren\'t showing up.\"
+
++-----------------------------------------------------------------------+
+| **SESSION 4**                                                         |
+|                                                                       |
+| **Forms & User Input (GET)**                                          |
+|                                                                       |
+| *The browser URL is just data --- Python reads it*                    |
++-----------------------------------------------------------------------+
+
+  ----------------------- -----------------------------------------------
+  **Duration:** 3 hours   **Goal:** Students understand how HTML forms
+                          send data through the URL via GET, and how
+                          Flask reads it with request.args.
+
+  ----------------------- -----------------------------------------------
+
+**Time Breakdown**
+
+  ---------- ------------------- ----------------------------------------
+  **0:00 --  **Demo & Lecture**  Hook, first form, request.args, dropdown,
+  0:45**                         mini-challenge
+
+  **0:45 --  **Break**           
+  0:55**                         
+
+  **0:55 --  **Guided Practice** Teacher demos one conversion, students
+  1:25**                         add their own
+
+  **1:25 --  **Free Practice**   Full Conversor Universal
+  2:45**                         
+
+  **2:45 --  **Wrap-up**         Show-and-tell, seed POST
+  3:00**                         
+  ---------- ------------------- ----------------------------------------
+
+🎬 **Block 1 --- Demo & Lecture**
+
+*\[45 minutes\]*
+
+**Opening Hook**
+
+*\[5 minutes\]*
+
+Open the browser on Google search. Type something and hit enter. Point
+at the URL: ?q=flask+tutorial. Ask: "Where did that come from?" That
+?q= is a form. The browser just put their input in the URL. Flask can
+read that exact same thing --- and that is what today is about.
+
+**First Form**
+
+*\[15 minutes\]*
+
+-   Write a plain HTML form: action="/", method="GET", one
+    \<input name="value"\>, one submit button
+
+-   Show what happens in the URL when you submit --- the input name
+    appears as ?value=...
+
+-   In the route: request.args.get("value") --- reads it right out of
+    the URL
+
+-   Return the value in the template. Refresh, change the input, see the
+    URL change, see the page change
+
+-   Open Network tab, show the request going out with the query string
+    visible
+
+  -----------------------------------------------------------------------
+  **Tip:** The moment they see their typed value appear in the URL and
+  then on the page is the whole concept. Do not rush past it. Ask a
+  student to type something unexpected and watch the URL update live.
+
+  -----------------------------------------------------------------------
+
+**Adding a Dropdown**
+
+*\[10 minutes\]*
+
+-   Add a \<select name="type"\> with two options: celsius and kg
+
+-   In Python: request.args.get("type") --- same pattern, different
+    input element
+
+-   Show that both values arrive together: args.get("value") and
+    args.get("type")
+
+-   Write the conditional: if type == "celsius": result = ..., elif type
+    == "kg": result = ...
+
+-   Emphasize: the form does not care what the dropdown means --- it
+    just sends a string. Python decides what to do with it.
+
+  -----------------------------------------------------------------------
+  **Tip:** Write request.args.get("name") on the board and keep it there
+  for the whole session. Every confusion in this session traces back to
+  either the name attribute in HTML or the key passed to .get(). When
+  students are stuck, point at the board.
+
+  -----------------------------------------------------------------------
+
+**Handling the Empty State**
+
+*\[10 minutes\]*
+
+-   What happens if someone visits the page with no form submission yet?
+    request.args.get("value") returns None
+
+-   Show the template crashing if you try to display None in a
+    calculation
+
+-   Fix: if "value" in request.args: --- only compute when the form has
+    been submitted
+
+-   Show the clean pattern: render the form, only show the result
+    section when data exists
+
+  -----------------------------------------------------------------------
+  **Tip:** This "empty state" problem is not a gotcha --- it is a
+  real-world habit. Any time they read from a form or URL, they should
+  ask: "What happens if this isn't there yet?" Plant the habit now, it
+  pays off for the rest of the course.
+
+  -----------------------------------------------------------------------
+
+⚡ **Mini-Challenge Before Break**
+
+*\[5 minutes\]*
+
+"Add a third option to the dropdown --- your choice. Add the conversion
+logic in Python. 3 minutes." Quick test that they can extend a pattern
+rather than just copy one.
+
+☕ **Break**
+
+*\[10 minutes\]*
+
+🛠 **Block 2 --- Guided Practice**
+
+*\[30 minutes\]*
+
+**Project: Celsius → Fahrenheit (together), then extend alone**
+
+Teacher codes the full working Celsius → Fahrenheit converter on the
+projector: the route, the form, the dropdown with one option, the
+conditional, the result in the template. Students follow along. Then the
+teacher steps back and gives the instruction:
+
+"Now add at least two more conversion types on your own. You already
+have the pattern."
+
+**Requirements:**
+
+-   One route /, one template converter.html
+
+-   A \<select\> dropdown with at least 3 options total (Celsius is the
+    one from the demo)
+
+-   request.args.get() to read both the value and the selected type
+
+-   A conditional block in Python that computes the correct result per
+    type
+
+-   The result displayed in the template only when a conversion has been
+    submitted
+
+-   Sensible placeholder text when the page first loads ("Enter a value
+    above")
+
+  -----------------------------------------------------------------------
+  **Tip:** Students who get stuck after the demo are almost always stuck
+  on one of two things: the name attribute mismatch, or forgetting to
+  guard against the empty state. Check those two things first before
+  reading their logic.
+
+  -----------------------------------------------------------------------
+
+🚀 **Block 3 --- Free Practice**
+
+*\[80 minutes\]*
+
+**Core Challenge: Conversor Universal**
+
+Build a full multi-conversion tool with a clean interface. The dropdown
+grows, the logic grows, but the file count stays exactly the same: one
+route, one template.
+
+**Suggested conversions to implement:**
+
+-   Celsius ↔ Fahrenheit (from the demo)
+
+-   Quilogramas → Libras
+
+-   Centímetros → Polegadas
+
+-   Quilômetros → Milhas
+
+-   BRL → USD (use a fixed rate --- no API, no drama)
+
+-   Hectares → campos de futebol (always gets a laugh)
+
+**Requirements:**
+
+-   At least 5 conversion types in the dropdown
+
+-   Result only shown after submission (empty state handled)
+
+-   Conversion type displayed in the result ("23°C = 73.4°F", not just
+    "73.4")
+
+-   A clear, readable template (student's choice of styling)
+
+**Stretch Goals (fast finishers):**
+
+-   Add a "swap direction" option --- e.g. Fahrenheit → Celsius as a
+    separate dropdown entry
+
+-   Show the formula used below the result ("Fórmula: (°C × 9/5) + 32")
+
+-   Add input validation: what if the user types "banana"? Use
+    try/except float() and show a friendly error message in the template
+
+-   Style the result differently depending on the conversion type (a
+    thermometer emoji for temperature, a scale for weight, etc.)
+
+  -----------------------------------------------------------------------
+  **Tip:** The BRL → USD conversion tends to spark a real conversation
+  about exchange rates and why a fixed rate is a simplification. That is
+  fine --- it takes 30 seconds and makes the exercise feel grounded. If
+  a student asks "but what if the rate changes?" tell them: "Great
+  question. That is an API. We are not there yet."
+
+  -----------------------------------------------------------------------
+
+🎯 **Wrap-up**
+
+*\[15 minutes\]*
+
+-   2--3 volunteers show their conversor in the browser --- ask them to
+    try a few conversions live
+
+-   Reinforce the key insight: GET forms just put data in the URL.
+    request.args.get() reads it. That is the whole model.
+
+-   Seed next class: "Today the URL changed every time you submitted.
+    What if you didn't want that? What if you were sending a password,
+    or a vote, or a prediction? Next class: POST."
+
+**Materials & Preparation**
+
+-   **Cheat sheet:** HTML form syntax with method="GET", \<input
+    name=""\> and \<select name=""\>, request.args.get("key"), the
+    empty-state guard pattern
+
+-   **Conversion formulas reference:** A short list of the formulas for
+    each suggested conversion --- saves students Googling mid-exercise
+
+-   **Pre-check:** Confirm request is imported from flask in the demo
+    starter file
+
+**Pedagogical Notes**
+
+The single-file constraint is intentional and worth enforcing. Every
+conversion gets added to the same route and the same template ---
+students feel the app grow without the cognitive overhead of new files.
+This is the right scope for a first encounter with forms.
+
+The empty-state handling is the most important habit introduced in this
+session. It will reappear every time they read from request.args or
+request.form for the rest of the course. Frame it as a professional
+instinct, not a workaround.
+
+GET is easier than POST precisely because the data is visible in the
+URL. That visibility is a teaching asset --- use it deliberately. Point
+at the URL constantly during the demo.
+
++-----------------------------------------------------------------------+
+| **SESSION 5**                                                         |
+|                                                                       |
+| **Forms & User Input (POST)**                                         |
+|                                                                       |
+| *POST hides the data --- Flask still reads it*                        |
++-----------------------------------------------------------------------+
+
+  ----------------------- -----------------------------------------------
+  **Duration:** 3 hours   **Goal:** Students understand how POST differs
+                          from GET, use request.form to read submitted
+                          data, store it in memory, and display it back
+                          --- building a live prediction board.
+
+  ----------------------- -----------------------------------------------
+
+**Time Breakdown**
+
+  ---------- ------------------- ----------------------------------------
+  **0:00 --  **Demo & Lecture**  Hook, POST vs GET, request.form, method
+  0:45**                         check, mini-challenge
+
+  **0:45 --  **Break**           
+  0:55**                         
+
+  **0:55 --  **Guided Practice** Teacher builds the submission form,
+  1:25**                         students add the board
+
+  **1:25 --  **Free Practice**   Full Bolão da Copa
+  2:45**                         
+
+  **2:45 --  **Wrap-up**         Show-and-tell, seed database
+  3:00**                         
+  ---------- ------------------- ----------------------------------------
+
+🎬 **Block 1 --- Demo & Lecture**
+
+*\[45 minutes\]*
+
+**Opening Hook**
+
+*\[5 minutes\]*
+
+Open the Conversor from last class. Submit a conversion. Point at the
+URL: all the data is right there, visible to anyone. Now ask: "Would
+you want your password in the URL? Your credit card? Your vote?" That
+discomfort is exactly why POST exists. Same idea --- form sends data to
+Python --- but the data goes in the request body, not the URL.
+Invisible, slightly more private, and required for anything that changes
+server state.
+
+**First POST Route**
+
+*\[15 minutes\]*
+
+-   Write a minimal form: method="POST", one \<input name="team"\>, one
+    submit
+
+-   Add methods=["GET", "POST"] to the route decorator --- explain why
+    both are needed
+
+-   In the route: if request.method == "POST": then
+    request.form.get("team")
+
+-   Submit --- the URL does not change. The data arrived silently.
+
+-   Open the Network tab: show the request payload in the POST body ---
+    it is there, just not in the URL
+
+  -----------------------------------------------------------------------
+  **Tip:** Students sometimes try request.args.get() out of habit. When
+  it returns None, they are confused. Write both on the board side by
+  side --- request.args for GET, request.form for POST --- and keep them
+  there for the whole session.
+
+  -----------------------------------------------------------------------
+
+**Storing Submissions in Memory**
+
+*\[15 minutes\]*
+
+-   Declare an empty list at the top of app.py: predictions = []
+
+-   On POST: append a dict to the list --- name, team, score
+
+-   Pass the list to the template on every render
+
+-   Show the template looping over the list with {% for %} --- familiar
+    from Session 2
+
+-   Submit a few entries live, watch the board grow
+
+  -----------------------------------------------------------------------
+  **Tip:** Ask a student to submit something from their laptop while you
+  submit from the projector machine. Both entries appear on each other's
+  boards because the list lives on the server, not the browser. This
+  small moment makes "server-side state" click better than any diagram.
+
+  -----------------------------------------------------------------------
+
+**Method Check Pattern**
+
+*\[5 minutes\]*
+
+-   Show the full clean pattern: if request.method == "POST": → read
+    form, append, re-render; else: → just render the empty form
+
+-   Explain: GET loads the page, POST sends the data. One route, two
+    behaviors.
+
+-   Preview: "Next session we will talk about why you usually redirect
+    after a POST instead of re-rendering. For now, re-rendering is fine."
+
+⚡ **Mini-Challenge Before Break**
+
+*\[5 minutes\]*
+
+"Add a second field to the form --- predicted score. Read it in the
+route and add it to the dict in the list. 3 minutes." Ensures every
+student has written request.form.get() at least once before the break.
+
+☕ **Break**
+
+*\[10 minutes\]*
+
+🛠 **Block 2 --- Guided Practice**
+
+*\[30 minutes\]*
+
+**Project: Bolão da Copa --- submission form (together), prediction board (solo)**
+
+Teacher builds the submission form on the projector: the route with
+methods=["GET", "POST"], the predictions list, the POST handler reading
+name and match from the form. Stops there. Students then build the
+prediction board in the template on their own --- the loop, the
+display, the layout.
+
+**Requirements:**
+
+-   One route /, one list predictions = [] at module level
+
+-   Form fields: name (text input), match (dropdown --- at least 4
+    group-stage matchups), home_score and away_score (number inputs)
+
+-   On POST: append a dict to predictions, re-render the page
+
+-   Template shows the form at the top, the prediction board below
+
+-   Board loops through predictions and displays each entry: name,
+    match, predicted scoreline
+
+-   Empty state: show "Nenhuma previsão ainda." when the list is empty
+
+  -----------------------------------------------------------------------
+  **Tip:** The most common issue here is the list resetting between
+  submissions. This happens when students accidentally declare
+  predictions = [] inside the route function instead of at module level.
+  Check for this first when a student says "my list is always empty."
+
+  -----------------------------------------------------------------------
+
+🚀 **Block 3 --- Free Practice**
+
+*\[80 minutes\]*
+
+**Core Challenge: Bolão da Copa completo**
+
+Finish and polish the prediction board into a proper mini-app. Real
+World Cup group stage matchups make the dropdown feel alive --- use
+them if timing allows.
+
+**Suggested matchups for the dropdown:**
+
+-   Brasil × Sérvia
+
+-   Brasil × Suíça
+
+-   Brasil × Camarões
+
+-   Argentina × Arábia Saudita
+
+-   Portugal × Gana
+
+-   França × Austrália
+
+**Requirements:**
+
+-   At least 6 matchups in the dropdown
+
+-   Each prediction stored as a dict: submitter name, match, home score,
+    away score
+
+-   Prediction board shows all entries in order, newest first
+
+-   Empty state handled gracefully
+
+-   Basic styling from a linked CSS file
+
+**Stretch Goals (fast finishers):**
+
+-   Add a "winner" field: a third dropdown (Casa / Empate / Fora) and
+    display it alongside the scoreline
+
+-   Add a simple tally at the top: "X previsões registradas"
+
+-   Add basic validation: if name is empty, show an error message
+    instead of appending an empty entry
+
+-   Filter the board by match using a query parameter --- e.g.
+    /?match=brasil shows only Brasil predictions (combines GET and POST
+    knowledge)
+
+  -----------------------------------------------------------------------
+  **Tip:** The filter stretch goal is a great bridge between Sessions 4
+  and 5 --- it forces students to use request.args inside a POST route,
+  which shows that GET and POST are not mutually exclusive. Only push
+  fast finishers toward it.
+
+  -----------------------------------------------------------------------
+
+🎯 **Wrap-up**
+
+*\[15 minutes\]*
+
+-   2--3 volunteers submit live predictions on the projector --- the
+    class sees each other's entries appear on the board in real time
+
+-   Reinforce: GET = data in URL, POST = data in body. request.args vs
+    request.form. One route, two methods.
+
+-   Seed next class: "The predictions disappear every time we restart
+    the server. The list lives in memory, not on disk. Next class we fix
+    that --- we give our app a real database."
+
+**Materials & Preparation**
+
+-   **Cheat sheet:** methods=["GET", "POST"] on the decorator,
+    request.method check, request.form.get("key"), the module-level list
+    pattern
+
+-   **Match list handout:** Pre-written list of group stage fixtures
+    students can paste directly into their dropdown --- saves 5 minutes
+    of Googling team names
+
+-   **Pre-check:** Make sure the demo starter file imports request from
+    flask
+
+**Pedagogical Notes**
+
+The server-side list is a conceptual stepping stone, not a production
+pattern. Students do not need to know it is fragile --- they just need
+to see that the server holds state and the browser reads it. The
+database session will naturally surface why in-memory storage is
+insufficient.
+
+The live "two machines, one list" moment during the demo is worth
+engineering deliberately. If there is a second computer in the room
+(even a student's laptop on the same WiFi), use it. Seeing a
+classmate's entry appear on your board makes the client/server model
+viscerally real in a way no diagram can.
+
+Keep the World Cup angle grounded in the actual group stage if timing
+allows --- real teams, real matchups. If the course runs before or
+after the tournament, fictional matchups work fine, but real ones
+generate genuine investment.
