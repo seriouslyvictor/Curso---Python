@@ -53,8 +53,8 @@ over learning by listening.
 
   4        Forms & User Input (GET) HTML forms, query parameters, request.args
 
-  5        Forms & User Input       POST method, request.form, basic
-           (POST)                   validation
+  5        Forms & User Input       POST method, request.form, two-route
+           (POST)                   pattern, in-memory state
 
   6        Data Persistence         SQLite, Flask-SQLAlchemy, models, first
                                     queries
@@ -1099,31 +1099,32 @@ at the URL constantly during the demo.
 |                                                                       |
 | **Forms & User Input (POST)**                                         |
 |                                                                       |
-| *POST hides the data --- Flask still reads it*                        |
+| *POST sends. GET shows.*                                              |
 +-----------------------------------------------------------------------+
 
   ----------------------- -----------------------------------------------
-  **Duration:** 3 hours   **Goal:** Students understand how POST differs
-                          from GET, use request.form to read submitted
-                          data, store it in memory, and display it back
-                          --- building a live prediction board.
+  **Duration:** 3 hours   **Goal:** Students use a POST form to submit
+                          players one at a time to an in-memory roster,
+                          and a separate GET route to display the full
+                          team --- experiencing the natural split between
+                          the two methods.
 
   ----------------------- -----------------------------------------------
 
 **Time Breakdown**
 
   ---------- ------------------- ----------------------------------------
-  **0:00 --  **Demo & Lecture**  Hook, POST vs GET, request.form, method
-  0:45**                         check, mini-challenge
+  **0:00 --  **Demo & Lecture**  Hook, POST vs GET, two-route pattern,
+  0:45**                         request.form, mini-challenge
 
   **0:45 --  **Break**           
   0:55**                         
 
-  **0:55 --  **Guided Practice** Teacher builds the submission form,
-  1:25**                         students add the board
+  **0:55 --  **Guided Practice** Teacher builds /add together, students
+  1:25**                         build /team alone
 
-  **1:25 --  **Free Practice**   Full Bolão da Copa
-  2:45**                         
+  **1:25 --  **Free Practice**   Full Dream Team for a country of their
+  2:45**                         choice
 
   **2:45 --  **Wrap-up**         Show-and-tell, seed database
   3:00**                         
@@ -1137,83 +1138,97 @@ at the URL constantly during the demo.
 
 *\[5 minutes\]*
 
-Open the Conversor from last class. Submit a conversion. Point at the
-URL: all the data is right there, visible to anyone. Now ask: "Would
-you want your password in the URL? Your credit card? Your vote?" That
-discomfort is exactly why POST exists. Same idea --- form sends data to
-Python --- but the data goes in the request body, not the URL.
-Invisible, slightly more private, and required for anything that changes
-server state.
+Pull up the Conversor from last class. Submit a conversion. Point at
+the URL: all the data is right there --- value, type, everything
+visible. Ask: "Would you want the player you're signing to appear in
+the URL for everyone to see?" Now imagine a transfer form, a login, a
+vote. Some data belongs in the request body, invisible, not in the
+URL. That's POST. Same idea --- form sends data to Python --- different
+lane.
 
-**First POST Route**
-
-*\[15 minutes\]*
-
--   Write a minimal form: method="POST", one \<input name="team"\>, one
-    submit
-
--   Add methods=["GET", "POST"] to the route decorator --- explain why
-    both are needed
-
--   In the route: if request.method == "POST": then
-    request.form.get("team")
-
--   Submit --- the URL does not change. The data arrived silently.
-
--   Open the Network tab: show the request payload in the POST body ---
-    it is there, just not in the URL
-
-  -----------------------------------------------------------------------
-  **Tip:** Students sometimes try request.args.get() out of habit. When
-  it returns None, they are confused. Write both on the board side by
-  side --- request.args for GET, request.form for POST --- and keep them
-  there for the whole session.
-
-  -----------------------------------------------------------------------
-
-**Storing Submissions in Memory**
-
-*\[15 minutes\]*
-
--   Declare an empty list at the top of app.py: predictions = []
-
--   On POST: append a dict to the list --- name, team, score
-
--   Pass the list to the template on every render
-
--   Show the template looping over the list with {% for %} --- familiar
-    from Session 2
-
--   Submit a few entries live, watch the board grow
-
-  -----------------------------------------------------------------------
-  **Tip:** Ask a student to submit something from their laptop while you
-  submit from the projector machine. Both entries appear on each other's
-  boards because the list lives on the server, not the browser. This
-  small moment makes "server-side state" click better than any diagram.
-
-  -----------------------------------------------------------------------
-
-**Method Check Pattern**
+**Two Routes, Two Jobs**
 
 *\[5 minutes\]*
 
--   Show the full clean pattern: if request.method == "POST": → read
-    form, append, re-render; else: → just render the empty form
+Draw on the board before writing a line of code:
 
--   Explain: GET loads the page, POST sends the data. One route, two
-    behaviors.
+-   /add → POST. The form. Where players get submitted.
 
--   Preview: "Next session we will talk about why you usually redirect
-    after a POST instead of re-rendering. For now, re-rendering is fine."
+-   /team → GET. The roster. Where the full team is displayed.
+
+One route sends data. One route shows data. They share a single list
+that lives on the server. This is the whole app.
+
+**Building /add**
+
+*\[15 minutes\]*
+
+-   Declare team = [] at the top of app.py --- at module level, outside
+    any function
+
+-   Write the /add route with methods=["GET", "POST"]
+
+-   Write the form template: three fields --- name (text), position
+    (dropdown: Goalkeeper, Defender, Midfielder, Forward), image_url
+    (text)
+
+-   On GET: render the empty form
+
+-   On POST: request.form.get("name"), request.form.get("position"),
+    request.form.get("image_url") --- append a dict to team, then
+    redirect to /team
+
+-   Submit one player live. Nothing shows yet --- redirect lands on
+    /team, which does not exist. Good. That is the next step.
+
+  -----------------------------------------------------------------------
+  **Tip:** Write request.args for GET and request.form for POST side by
+  side on the board and leave them there. Students coming from Session 4
+  will reach for request.args out of habit. When it returns None, point
+  at the board.
+
+  -----------------------------------------------------------------------
+
+**Building /team**
+
+*\[10 minutes\]*
+
+-   Write the /team route: just render_template("team.html", team=team)
+
+-   Write team.html: loop through team with {% for %}, display name,
+    position, and the image with \<img src="{{ player.image_url }}"\>
+
+-   Add the empty state: {% if team %} ... {% else %} "Nenhum jogador
+    ainda."
+
+-   Refresh --- the player submitted a moment ago appears on the roster
+
+  -----------------------------------------------------------------------
+  **Tip:** The redirect after POST is deliberate and worth naming
+  explicitly: "We POST to /add, then immediately GET /team. The form
+  and the display are separate. This is the clean pattern." Do not go
+  deep on PRG yet --- just plant the habit.
+
+  -----------------------------------------------------------------------
+
+**The 11-Player Cap**
+
+*\[5 minutes\]*
+
+-   Show the guard in the POST handler: if len(team) < 11: append, else
+    skip
+
+-   This is a real constraint, not an exercise bolt-on. A football team
+    has 11 players. The code enforces the rule.
 
 ⚡ **Mini-Challenge Before Break**
 
 *\[5 minutes\]*
 
-"Add a second field to the form --- predicted score. Read it in the
-route and add it to the dict in the list. 3 minutes." Ensures every
-student has written request.form.get() at least once before the break.
+"Add a number field to the form --- shirt number, text input. Read it
+in the route, store it in the dict, display it on the team page. 3
+minutes." Ensures every student has written request.form.get() at
+least once before the break.
 
 ☕ **Break**
 
@@ -1223,35 +1238,38 @@ student has written request.form.get() at least once before the break.
 
 *\[30 minutes\]*
 
-**Project: Bolão da Copa --- submission form (together), prediction board (solo)**
+**Project: Brazil Dream Team --- /add together, /team alone**
 
-Teacher builds the submission form on the projector: the route with
-methods=["GET", "POST"], the predictions list, the POST handler reading
-name and match from the form. Stops there. Students then build the
-prediction board in the template on their own --- the loop, the
-display, the layout.
+Teacher builds the full /add route and form template live on the
+projector with the class: the route decorator, the form fields, the
+POST handler, the redirect. Stops there. Students then build /team and
+team.html on their own --- the route, the loop, the image display, the
+empty state.
 
 **Requirements:**
 
--   One route /, one list predictions = [] at module level
+-   team = [] declared at module level
 
--   Form fields: name (text input), match (dropdown --- at least 4
-    group-stage matchups), home_score and away_score (number inputs)
+-   /add with methods=["GET", "POST"] --- form with name, position
+    (dropdown), image URL, shirt number
 
--   On POST: append a dict to predictions, re-render the page
+-   On POST: append dict to team, redirect to /team
 
--   Template shows the form at the top, the prediction board below
+-   /team GET route rendering team.html
 
--   Board loops through predictions and displays each entry: name,
-    match, predicted scoreline
+-   team.html loops through team, displays all four fields per player
 
--   Empty state: show "Nenhuma previsão ainda." when the list is empty
+-   Player image rendered with \<img src="{{ player.image_url }}"\>
+
+-   Empty state message when no players have been added yet
+
+-   11-player cap enforced in the POST handler
 
   -----------------------------------------------------------------------
-  **Tip:** The most common issue here is the list resetting between
-  submissions. This happens when students accidentally declare
-  predictions = [] inside the route function instead of at module level.
-  Check for this first when a student says "my list is always empty."
+  **Tip:** The most common bug here is team = [] declared inside the
+  route function --- the list resets on every request and students think
+  POST is not working. Check module-level placement first whenever a
+  student says "my players keep disappearing."
 
   -----------------------------------------------------------------------
 
@@ -1259,58 +1277,49 @@ display, the layout.
 
 *\[80 minutes\]*
 
-**Core Challenge: Bolão da Copa completo**
+**Core Challenge: Dream Team --- your country**
 
-Finish and polish the prediction board into a proper mini-app. Real
-World Cup group stage matchups make the dropdown feel alive --- use
-them if timing allows.
-
-**Suggested matchups for the dropdown:**
-
--   Brasil × Sérvia
-
--   Brasil × Suíça
-
--   Brasil × Camarões
-
--   Argentina × Arábia Saudita
-
--   Portugal × Gana
-
--   França × Austrália
+Students build their own dream team from scratch for any national team
+they choose. Same two-route structure as the demo, fully their own
+content. Personal investment in the team selection keeps motivation
+high --- they will genuinely care which players make the cut.
 
 **Requirements:**
 
--   At least 6 matchups in the dropdown
+-   Same two-route structure: /add (POST form) and /team (GET display)
 
--   Each prediction stored as a dict: submitter name, match, home score,
-    away score
+-   Position dropdown with at least 4 options
 
--   Prediction board shows all entries in order, newest first
+-   Image URL field --- players must have images on the roster
 
--   Empty state handled gracefully
+-   11-player cap enforced
 
--   Basic styling from a linked CSS file
+-   Empty state on the team page
+
+-   At least basic styling: the roster should look like a roster, not a
+    raw list
 
 **Stretch Goals (fast finishers):**
 
--   Add a "winner" field: a third dropdown (Casa / Empate / Fora) and
-    display it alongside the scoreline
+-   Add a "Clear Team" button --- a second small POST form on /team that
+    empties the list and redirects back (introduces the idea of multiple
+    forms on one page)
 
--   Add a simple tally at the top: "X previsões registradas"
+-   Show a counter: "X/11 jogadores" on both pages so the user always
+    knows how full the squad is
 
--   Add basic validation: if name is empty, show an error message
-    instead of appending an empty entry
+-   Add a captain flag --- a checkbox on the form, stored in the dict,
+    displayed with a ⭐ badge on the roster
 
--   Filter the board by match using a query parameter --- e.g.
-    /?match=brasil shows only Brasil predictions (combines GET and POST
-    knowledge)
+-   Validate that the same shirt number cannot be used twice --- check
+    before appending and show an inline error if it is taken
 
   -----------------------------------------------------------------------
-  **Tip:** The filter stretch goal is a great bridge between Sessions 4
-  and 5 --- it forces students to use request.args inside a POST route,
-  which shows that GET and POST are not mutually exclusive. Only push
-  fast finishers toward it.
+  **Tip:** Students will spend time finding good image URLs. Nudge them
+  toward Wikipedia player pages or official federation sites --- the
+  images are stable and usually direct links. If a student's image is
+  not showing, check the URL in a browser tab first before debugging
+  Flask.
 
   -----------------------------------------------------------------------
 
@@ -1318,44 +1327,46 @@ them if timing allows.
 
 *\[15 minutes\]*
 
--   2--3 volunteers submit live predictions on the projector --- the
-    class sees each other's entries appear on the board in real time
+-   2--3 volunteers show their rosters --- ask them to add a player live
+    on the projector so the class sees the POST → redirect → GET flow
+    in action
 
--   Reinforce: GET = data in URL, POST = data in body. request.args vs
-    request.form. One route, two methods.
+-   Reinforce the two-route split: POST is for sending, GET is for
+    showing. One list, two doors.
 
--   Seed next class: "The predictions disappear every time we restart
-    the server. The list lives in memory, not on disk. Next class we fix
-    that --- we give our app a real database."
+-   Seed next class: "Right now the squad disappears the moment we
+    restart the server. It lives in Python's memory, not on disk. Next
+    class we fix that permanently --- we give our app a real database."
 
 **Materials & Preparation**
 
 -   **Cheat sheet:** methods=["GET", "POST"] on the decorator,
-    request.method check, request.form.get("key"), the module-level list
-    pattern
+    request.method check, request.form.get("key"), the module-level
+    list pattern, redirect syntax
 
--   **Match list handout:** Pre-written list of group stage fixtures
-    students can paste directly into their dropdown --- saves 5 minutes
-    of Googling team names
+-   **Starter image URLs:** 4--5 pre-tested working image URLs for
+    well-known Brazilian players --- saves the first 10 minutes of the
+    demo from becoming a Google Images session
 
--   **Pre-check:** Make sure the demo starter file imports request from
-    flask
+-   **Pre-check:** Confirm request and redirect are both imported from
+    flask in the demo file
 
 **Pedagogical Notes**
 
-The server-side list is a conceptual stepping stone, not a production
-pattern. Students do not need to know it is fragile --- they just need
-to see that the server holds state and the browser reads it. The
-database session will naturally surface why in-memory storage is
-insufficient.
+The two-route structure is the session's main conceptual payload, not
+just an exercise choice. GET and POST are not just different methods
+--- they have different jobs, and splitting them into separate routes
+makes that tangible. Students who see this pattern once will reach for
+it instinctively in Sessions 7 and 8 when CRUD gets more complex.
 
-The live "two machines, one list" moment during the demo is worth
-engineering deliberately. If there is a second computer in the room
-(even a student's laptop on the same WiFi), use it. Seeing a
-classmate's entry appear on your board makes the client/server model
-viscerally real in a way no diagram can.
+The redirect after POST is introduced here as the natural thing to do
+--- you submitted something, now go look at it. The formal name for
+this pattern (Post/Redirect/Get) and why it matters (double-submit
+prevention, browser back button behavior) comes in Session 9. Do not
+front-load the theory --- let the habit form first.
 
-Keep the World Cup angle grounded in the actual group stage if timing
-allows --- real teams, real matchups. If the course runs before or
-after the tournament, fictional matchups work fine, but real ones
-generate genuine investment.
+The 11-player cap is a small but real moment of code reflecting a
+real-world rule. Point it out explicitly: "The sport has a rule, the
+code has a rule. They match." Students who connect domain logic to
+conditional logic early build better instincts for the rest of the
+course.

@@ -1,0 +1,194 @@
+{# ======================================================================
+   elenco.html - Template de exibicao do elenco - Sessao 5
+   ======================================================================
+
+   FOCO DA AULA:
+   Este template SOMENTE exibe. Nao ha nenhum formulario POST aqui.
+   Ele mostra a lista elenco que chegou via render_template.
+
+   O dado percorreu este caminho antes de chegar aqui:
+
+     1. Usuario preencheu o formulario em adicionar.html
+     2. Navegador fez POST /adicionar com os dados no corpo
+     3. app.py leu com request.form.get() e fez elenco.append(jogador)
+     4. app.py chamou redirect(url_for("pagina_elenco"))
+     5. Navegador fez GET /elenco
+     6. app.py chamou render_template("elenco.html", elenco=elenco)
+     7. Chegamos aqui
+
+   O template nao sabe como o elenco foi preenchido.
+   Ele so sabe exibir o que recebeu.
+#}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elenco | Flask Sessao 5</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <p class="etiqueta-aula">Sessao 05 — Forms &amp; User Input (POST)</p>
+      <h1>Dream Team</h1>
+      <p>
+        Esta pagina so exibe. Os dados vieram de <code>elenco</code>,
+        a lista que mora no nivel do modulo em <code>app.py</code>.
+      </p>
+    </div>
+  </header>
+
+  <nav class="nav-paginas">
+    <a href="/adicionar">Adicionar Jogador</a>
+    <a href="/elenco" class="link-ativo">Ver Elenco ({{ total_jogadores }}/{{ limite }})</a>
+  </nav>
+
+  <main class="conteudo-principal">
+
+    <section class="painel">
+
+      {# Cabecalho da secao com o contador do elenco #}
+      <div class="cabecalho-elenco">
+        <h2>Elenco</h2>
+        {# contador-cheio aplica estilo diferente quando o time esta completo #}
+        <span class="contador-elenco {% if total_jogadores == limite %}contador-cheio{% endif %}">
+          {{ total_jogadores }} / {{ limite }} jogadores
+        </span>
+      </div>
+
+      {# ---------------------------------------------------------------
+         ESTADO VAZIO
+         Se nenhum jogador foi adicionado, a lista elenco e [].
+         Em Python (e Jinja2), uma lista vazia e considerada False.
+         Entao {% if elenco %} so e verdadeiro quando ha pelo menos 1 item.
+      ---------------------------------------------------------------- #}
+      {% if not elenco %}
+        <div class="estado-vazio">
+          <p>Nenhum jogador no elenco ainda.</p>
+          <p class="texto-secundario">
+            Va para
+            <a href="/adicionar">Adicionar Jogador</a>
+            e monte seu time.
+          </p>
+        </div>
+
+      {% else %}
+
+        {# ---------------------------------------------------------------
+           LOOP PELOS JOGADORES
+           elenco e uma lista de dicionarios que veio do app.py.
+           Para cada dicionario, jogador assume os valores do item atual.
+
+           Cada dicionario tem estas chaves (definidas em app.py):
+             jogador["nome"]
+             jogador["posicao"]
+             jogador["url_imagem"]
+             jogador["numero_camisa"]
+
+           Em Jinja2, podemos usar ponto no lugar de colchetes:
+             jogador.nome  ==  jogador["nome"]
+        ---------------------------------------------------------------- #}
+        <div class="grade-jogadores">
+          {% for jogador in elenco %}
+            <article class="cartao-jogador">
+
+              {# Numero da camisa exibido no canto do cartao #}
+              <span class="numero-camisa">#{{ jogador.numero_camisa }}</span>
+
+              {# Foto do jogador.
+                 url_imagem foi digitada pelo usuario no formulario.
+                 onerror e JavaScript (nao Flask): esconde a imagem se a URL falhar.
+                 Se url_imagem estiver vazio, mostramos um placeholder. #}
+              {% if jogador.url_imagem %}
+                <img
+                  class="imagem-jogador"
+                  src="{{ jogador.url_imagem }}"
+                  alt="Foto de {{ jogador.nome }}"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                />
+                <div class="imagem-jogador sem-imagem" style="display:none;">Sem foto</div>
+              {% else %}
+                <div class="imagem-jogador sem-imagem">Sem foto</div>
+              {% endif %}
+
+              <div class="info-jogador">
+                <p class="nome-jogador">{{ jogador.nome }}</p>
+
+                {# Filtros Jinja2:
+                     lower       -> transforma em minusculas
+                     replace     -> troca espacos por hifens
+                   Resultado: "Meio-campo" -> "meio-campo"
+                   Isso gera a classe CSS "posicao-meio-campo" para estilizacao. #}
+                <span class="emblema-posicao posicao-{{ jogador.posicao | lower | replace(' ', '-') }}">
+                  {{ jogador.posicao }}
+                </span>
+              </div>
+
+            </article>
+          {% endfor %}
+        </div>
+
+      {% endif %}
+    </section>
+
+
+    {# ==================================================================
+       PAINEL CONCEITO: como a lista persiste entre requisicoes
+    ================================================================== #}
+    <section class="painel painel-conceito">
+      <h2>Como o elenco sobrevive entre requisicoes?</h2>
+
+      <p>
+        Cada clique no botao "Adicionar ao Elenco" e uma requisicao completamente
+        nova, independente das anteriores. Entao como os jogadores anteriores
+        ainda aparecem aqui?
+      </p>
+
+      <dl class="lista-conceitos">
+        <div>
+          <dt>Onde mora a lista</dt>
+          <dd>
+            No nivel do modulo em <code>app.py</code>, fora de qualquer funcao.
+            Python cria essa lista uma unica vez quando o servidor inicia.
+          </dd>
+        </div>
+        <div>
+          <dt>Por que ela persiste</dt>
+          <dd>
+            O servidor Flask e um processo Python que fica rodando continuamente.
+            Ele nao "reinicia" a cada request — apenas executa a funcao da rota.
+            A lista existe na memoria do processo e acumula os jogadores.
+          </dd>
+        </div>
+        <div>
+          <dt>O que apaga a lista</dt>
+          <dd>
+            Reiniciar o servidor (<kbd>Ctrl+C</kbd> e <code>flask run</code>
+            de novo). A lista volta a ser vazia porque o processo Python recomeca.
+          </dd>
+        </div>
+        <div>
+          <dt>Solucao permanente</dt>
+          <dd>
+            Banco de dados. Na Sessao 6, os dados vao para o disco com SQLite
+            e Flask-SQLAlchemy. Ai eles sobrevivem a qualquer reinicializacao.
+          </dd>
+        </div>
+      </dl>
+
+      <p class="dica-conceito">
+        <strong>Experimento:</strong> adicione alguns jogadores, depois pare o servidor
+        com <kbd>Ctrl+C</kbd> no terminal e rode <code>flask run</code> de novo.
+        O elenco vai sumir. Esse e o limite da memoria em Python
+        — e a motivacao para a proxima sessao.
+      </p>
+    </section>
+
+  </main>
+</body>
+</html>

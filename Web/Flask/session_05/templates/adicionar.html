@@ -1,0 +1,232 @@
+{# ======================================================================
+   adicionar.html - Template do formulario POST - Sessao 5
+   ======================================================================
+
+   FOCO DA AULA:
+   Este template tem um formulario com method="POST".
+   Quando o usuario clica em "Adicionar ao Elenco", o navegador envia
+   os dados no CORPO da requisicao - NAO na URL.
+
+   O Flask le esses dados em app.py com:
+     request.form.get("nome")
+     request.form.get("posicao")
+     request.form.get("url_imagem")
+     request.form.get("numero_camisa")
+
+   REGRA DE OURO (igual a Sessao 4, mas para POST):
+   O atributo name="" no HTML precisa bater EXATAMENTE com a chave
+   usada em request.form.get() no Python.
+
+     <input name="nome">          ->  request.form.get("nome")
+     <select name="posicao">      ->  request.form.get("posicao")
+     <input name="url_imagem">    ->  request.form.get("url_imagem")
+     <input name="numero_camisa"> ->  request.form.get("numero_camisa")
+
+   Se esses nomes forem diferentes, Flask nao encontra o dado (retorna None).
+#}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adicionar Jogador | Flask Sessao 5</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <p class="etiqueta-aula">Sessao 05 — Forms &amp; User Input (POST)</p>
+      <h1>Dream Team</h1>
+      <p>
+        O formulario envia dados no <strong>corpo</strong> da requisicao.
+        O Flask le com <code>request.form</code>, nao com <code>request.args</code>.
+      </p>
+    </div>
+  </header>
+
+  {# Navegacao entre as duas paginas da aplicacao.
+     total_jogadores e limite vieram do render_template no app.py. #}
+  <nav class="nav-paginas">
+    <a href="/adicionar" class="link-ativo">Adicionar Jogador</a>
+    <a href="/elenco">Ver Elenco ({{ total_jogadores }}/{{ limite }})</a>
+  </nav>
+
+  <main class="conteudo-principal">
+
+    {# ==================================================================
+       ESTADO: ELENCO CHEIO
+       elenco_cheio e um booleano calculado no app.py.
+       Se True, o formulario nao faz sentido - nao ha mais vagas.
+    ================================================================== #}
+    {% if elenco_cheio %}
+      <div class="painel mensagem-aviso">
+        <strong>Elenco completo!</strong>
+        <p>O time ja tem {{ limite }} jogadores. Nao e possivel adicionar mais.</p>
+        <a href="/elenco" class="botao-link">Ver elenco completo</a>
+      </div>
+
+    {% else %}
+
+      <section class="painel">
+        <h2>
+          Inscricao do Jogador
+          {# Plural dinamico com Jinja: "1 vaga restante" vs "2 vagas restantes" #}
+          <span class="contador-vagas">
+            {{ vagas_restantes }} vaga{{ 's' if vagas_restantes != 1 else '' }} restante{{ 's' if vagas_restantes != 1 else '' }}
+          </span>
+        </h2>
+
+        {# ---------------------------------------------------------------
+           FORMULARIO POST
+           ---------------------------------------------------------------
+           method="POST" — dados enviados no CORPO da requisicao.
+           action="/adicionar" — para onde os dados serao enviados.
+
+           Compare com o formulario da Sessao 4:
+             Sessao 4: method="GET"  action="/"           -> dados visiveis na URL
+             Sessao 5: method="POST" action="/adicionar"  -> dados no corpo (ocultos)
+
+           Abra as ferramentas de desenvolvedor > Network > clique em Adicionar.
+           Clique na requisicao POST e veja a aba "Payload" ou "Form Data".
+           Os dados estao la, no corpo — nao na URL.
+        ---------------------------------------------------------------- #}
+        <form class="formulario-inscricao" action="/adicionar" method="POST">
+
+          <div class="campo">
+            <label for="nome">Nome do Jogador</label>
+            {# name="nome" cria a chave "nome" no request.form do Flask.
+               required impede o envio se o campo estiver vazio. #}
+            <input
+              id="nome"
+              name="nome"
+              type="text"
+              placeholder="Ex: Vinicius Junior"
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label for="numero_camisa">Numero da Camisa</label>
+            {# name="numero_camisa" -> request.form.get("numero_camisa")
+               O Flask sempre recebe isso como STRING, mesmo sendo um numero.
+               Se precisar fazer contas, use int() ou float() em Python. #}
+            <input
+              id="numero_camisa"
+              name="numero_camisa"
+              type="number"
+              min="1"
+              max="99"
+              placeholder="Ex: 7"
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label for="posicao">Posicao</label>
+            {# O <select> envia o texto da <option> selecionada como string.
+               name="posicao" -> request.form.get("posicao")
+
+               posicoes e a lista posicoes_validas que veio do app.py.
+               O Jinja percorre essa lista e gera um <option> para cada item. #}
+            <select id="posicao" name="posicao">
+              {% for p in posicoes %}
+                <option value="{{ p }}">{{ p }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="url_imagem">URL da Foto (opcional)</label>
+            {# name="url_imagem" -> request.form.get("url_imagem")
+               type="url" ajuda o navegador a validar o formato basico. #}
+            <input
+              id="url_imagem"
+              name="url_imagem"
+              type="url"
+              placeholder="https://upload.wikimedia.org/..."
+            />
+          </div>
+
+          <button type="submit">Adicionar ao Elenco</button>
+        </form>
+      </section>
+
+    {% endif %}
+
+
+    {# ==================================================================
+       PAINEL CONCEITO: GET vs POST lado a lado
+       Este painel compara os dois metodos para fixar a diferenca.
+    ================================================================== #}
+    <section class="painel painel-conceito">
+      <h2>GET vs POST — a diferenca essencial</h2>
+
+      <p>
+        Ambos enviam dados do navegador para o Flask.
+        A diferenca e <em>onde</em> esses dados ficam na requisicao.
+      </p>
+
+      <div class="tabela-comparacao">
+
+        <div class="coluna-comparacao coluna-get">
+          <h3>GET <span class="tag-sessao">Sessao 4</span></h3>
+          <dl class="lista-conceitos">
+            <div>
+              <dt>Como envia</dt>
+              <dd>Dados aparecem na URL depois do <code>?</code></dd>
+            </div>
+            <div>
+              <dt>URL resultante</dt>
+              <dd><code>/?valor=25&amp;tipo=celsius</code></dd>
+            </div>
+            <div>
+              <dt>Flask le com</dt>
+              <dd><code>request.args.get("chave")</code></dd>
+            </div>
+            <div>
+              <dt>Quando usar</dt>
+              <dd>Buscas, filtros, consultas que podem ser marcadas como favoritas</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="coluna-comparacao coluna-post">
+          <h3>POST <span class="tag-sessao">Sessao 5</span></h3>
+          <dl class="lista-conceitos">
+            <div>
+              <dt>Como envia</dt>
+              <dd>Dados ficam no corpo (body) da requisicao, ocultos</dd>
+            </div>
+            <div>
+              <dt>URL resultante</dt>
+              <dd><code>/adicionar</code> (sem dados visiveis)</dd>
+            </div>
+            <div>
+              <dt>Flask le com</dt>
+              <dd><code>request.form.get("chave")</code></dd>
+            </div>
+            <div>
+              <dt>Quando usar</dt>
+              <dd>Criar, modificar, deletar dados. Senhas, votos, envios unicos</dd>
+            </div>
+          </dl>
+        </div>
+
+      </div>
+
+      <p class="dica-conceito">
+        <strong>Experimento:</strong> abra as Ferramentas do Desenvolvedor
+        (<kbd>F12</kbd>), va em <em>Network</em> e envie o formulario.
+        Clique na requisicao <code>POST /adicionar</code> e procure a aba
+        <em>Payload</em> ou <em>Form Data</em>. Os dados estao la, no corpo
+        — a URL continuou limpa.
+      </p>
+    </section>
+
+  </main>
+</body>
+</html>
