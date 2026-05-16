@@ -1,69 +1,93 @@
 import streamlit as st
-import google.generativeai as genai
 
-# --- Config ---
 
-SYSTEM_PROMPT = """Você é Dr. Hermes — um psicanalista onírico fictício formado pela tradição junguiana e freudiana.
-Sua missão é interpretar sonhos com profundidade simbólica, revelando arquétipos, desejos inconscientes e conflitos internos.
 
-Diretrizes:
-- Fale em primeira pessoa, com tom solene mas acessível — como um analista em sessão.
-- Identifique arquétipos junguianos (Sombra, Anima/Animus, Self, Trickster, etc.) quando relevantes.
-- Aplique leitura freudiana (simbolismo sexual/pulsional, mecanismos de defesa, ego/id/superego) com parcimônia.
-- Faça perguntas abertas para aprofundar detalhes do sonho — emoções sentidas, cores, personagens, sensações físicas.
-- Nunca dê diagnósticos médicos. Deixe claro que é uma análise simbólica, não clínica.
-- Termine cada resposta com UMA pergunta reflexiva ou convite para o sonhador explorar mais.
-- Responda sempre em Português (BR)."""
 
-st.set_page_config(page_title="Intérprete de Sonhos", page_icon="🌙", layout="centered")
+# with st.chat_message("user", avatar="images.jpg"):
+#     st.markdown("Sonhei que estava voando sobre marte!")
+#     st.metric(label="Dream Size", value=50)
+# with st.chat_message("assistant", avatar="sigmund_freud.jpg"):
+#     st.markdown("Dahora MEN!")
 
-st.title("🌙 Intérprete de Sonhos")
-st.caption("Uma sessão com Dr. Hermes — psicanalista onírico")
+# prompt =  st.chat_input("Escreva aqui")
+# if prompt:
+#     with st.chat_message("assistant", avatar="sigmund_freud.jpg"):
+#         st.write(f"That is what you said: {prompt}")
 
-# --- Chat history ---
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-    st.session_state.gemini_history = []
+# #Cache com session state:
 
-# --- Display chat ---
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"], avatar="🧑" if msg["role"] == "user" else "🌙"):
-        st.markdown(msg["content"])
 
-# --- Input ---
-if prompt := st.chat_input("Conte seu sonho..."):
-    # Show user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="🧑"):
+# if "mensagens" not in st.session_state:
+#     st.session_state.mensagens = []
+
+# if prompt:
+#     st.session_state.mensagens.append(prompt)
+
+# for m in st.session_state.mensagens:
+#     st.write(m)
+
+from google import genai
+from google.genai import types
+
+gemini = genai.Client(api_key='AIzaSyAhf6AKQXUc49vRF3_75rCR2FPPtXa8ybg')
+
+
+# chat = gemini.chats.create(model="gemini-3-flash-preview", config=types.GenerateContentConfig(
+#     system_instruction="Você é um analista de sonhos. Responda sempre em português"
+# ))
+
+# resposta1 = chat.send_message("Sonhei que estava sem dentes!")
+# print(resposta1.text)
+
+# resposta2 = chat.send_message("O que pode significar estar sem dentes???")
+# print(resposta2.text)
+
+# print(chat.get_history())
+
+SYSTEM_PROMPT = """
+Você deve assumir o papel de Sigmund Freud e interpretar sonhos, sempre que possívle associando os aos arquétipos Jungianos e Freudianos, você deve interpretar sonhos com profundidade simbólica, revelando medos, desejos inconscientes, conflitos internos e aspirações
+
+## Diretrizes:
+ - Fale em primeiro pessoa, como se fosse Freud.
+ - Identifique os arquétipos 
+ - Jamais pode ser fornecido dignósticos ou conselhos médicos, ou interpretações que podem por a saúde física e mental do usuário em risco
+ - Responda sempre em português
+ - Retone sempre uma pergunta reflexiva, para que o usuário possa se aprofundar mais em seu sonho.
+""" 
+
+st.set_page_config(page_title="Dream Weaver")
+st.title("Sessão com Doctor Freud")
+st.caption("Vamos descobrir o que seus sonhos significam...")
+
+if "mensagens" not in st.session_state:
+    st.session_state.mensagens= []
+    st.session_state.historico_gemini = []
+
+for m in st.session_state.mensagens:
+    if m["role"] == "user":
+        avatar = "😶‍🌫️"
+    else:
+        avatar =  "👨‍⚕️"
+    with st.chat_message(m["role"], avatar=avatar):
+        st.markdown(m["content"])
+
+
+if prompt := st.chat_input("conte seu sonho"):
+    st.session_state.mensagens.append({"role": "user", "content": prompt})
+    with st.chat_message("user", avatar="😶‍🌫️"):
         st.markdown(prompt)
 
-    # Build Gemini conversation
-    model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash-lite",
-        system_instruction=SYSTEM_PROMPT,
-    )
-    chat = model.start_chat(history=st.session_state.gemini_history)
+    chat = gemini.chats.create(model="gemini-3-flash-preview", config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
+                            history=st.session_state.historico_gemini)
 
-    with st.chat_message("assistant", avatar="🌙"):
-        with st.spinner("Dr. Hermes está interpretando..."):
-            response = chat.send_message(prompt)
-            reply = response.text
-        st.markdown(reply)
+    with st.chat_message("assistant", avatar="👨‍⚕️"):
+        with st.spinner("Freud está pensando...."):
+            resposta = chat.send_message(prompt)
+        st.markdown(resposta.text)
 
-    # Persist history
-    st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.session_state.gemini_history = chat.history
+    st.session_state.mensagens.append({'role': "assistant", 'content': resposta.text})
+    st.session_state.historico_gemini = chat.get_history()
 
-# --- Sidebar ---
 with st.sidebar:
-    st.header("Sobre o Dr. Hermes")
-    st.markdown(
-        "Analista onírico treinado nas tradições de **Jung** e **Freud**.\n\n"
-        "Compartilhe seu sonho — mesmo fragmentos — e explore o que o inconsciente tenta comunicar."
-    )
-    st.divider()
-    if st.button("🗑️ Nova sessão", use_container_width=True):
-        st.session_state.messages = []
-        st.session_state.gemini_history = []
-        st.rerun()
-    st.caption("Análise simbólica — não substitui acompanhamento clínico.")
+    st.write(st.session_state.mensagens)
+    st.write(st.session_state.historico_gemini)
